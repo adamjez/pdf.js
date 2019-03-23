@@ -138,10 +138,10 @@ class Toolbar {
       eventBus.dispatch('presentationmode', { source: self, });
     });
 
-    items.openFile.addEventListener('click', function() {
+    items.openFile && items.openFile.addEventListener('click', function() {
       eventBus.dispatch('openfile', { source: self, });
     });
-
+    
     items.print.addEventListener('click', function() {
       eventBus.dispatch('print', { source: self, });
     });

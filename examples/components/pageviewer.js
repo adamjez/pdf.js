@@ -53,7 +53,7 @@ loadingTask.promise.then(function(pdfDocument) {
       defaultViewport: pdfPage.getViewport({ scale: SCALE, }),
       // We can enable text/annotations layers, if needed
       textLayerFactory: new pdfjsViewer.DefaultTextLayerFactory(),
-      annotationLayerFactory: new pdfjsViewer.DefaultAnnotationLayerFactory(),
+      //anonymizationLayerFactory: new pdfjsViewer.DefaultAnonymizationLayerFactory(),
     });
     // Associates the actual page with the view, and drawing it
     pdfPageView.setPdfPage(pdfPage);

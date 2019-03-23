@@ -63,10 +63,8 @@ class SecondaryToolbar {
     this.buttons = [
       { element: options.presentationModeButton, eventName: 'presentationmode',
         close: true, },
-      { element: options.openFileButton, eventName: 'openfile', close: true, },
       { element: options.printButton, eventName: 'print', close: true, },
       { element: options.downloadButton, eventName: 'download', close: true, },
-      { element: options.viewBookmarkButton, eventName: null, close: true, },
       { element: options.firstPageButton, eventName: 'firstpage',
         close: true, },
       { element: options.lastPageButton, eventName: 'lastpage', close: true, },
@@ -172,6 +170,8 @@ class SecondaryToolbar {
     // All items within the secondary toolbar.
     for (let button in this.buttons) {
       let { element, eventName, close, eventDetails, } = this.buttons[button];
+
+      if(!element) continue;
 
       element.addEventListener('click', (evt) => {
         if (eventName !== null) {

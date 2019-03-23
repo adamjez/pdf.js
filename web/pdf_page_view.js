@@ -86,6 +86,8 @@ class PDFPageView {
     this.renderingQueue = options.renderingQueue;
     this.textLayerFactory = options.textLayerFactory;
     this.annotationLayerFactory = options.annotationLayerFactory;
+    this.anonymizationLayerFactory = options.anonymizationLayerFactory;
+    this.anonymizationParts = options.anonymizationParts;
     this.renderer = options.renderer || RendererType.CANVAS;
     this.enableWebGL = options.enableWebGL || false;
     this.l10n = options.l10n || NullL10n;
@@ -101,6 +103,7 @@ class PDFPageView {
 
     this.annotationLayer = null;
     this.textLayer = null;
+    this.anonymizationLayer  = null;
     this.zoomLayer = null;
 
     let div = document.createElement('div');
@@ -272,6 +275,10 @@ class PDFPageView {
       this.textLayer.cancel();
       this.textLayer = null;
     }
+    if(this.anonymizationLayer) {
+      this.anonymizationLayer.cancel();
+      this.anonymizationLayer = null;
+    }
     if (!keepAnnotations && this.annotationLayer) {
       this.annotationLayer.cancel();
       this.annotationLayer = null;
@@ -355,6 +362,9 @@ class PDFPageView {
     if (redrawAnnotations && this.annotationLayer) {
       this.annotationLayer.render(this.viewport, 'display');
     }
+    if(this.anonymizationLayer) {
+      this.anonymizationLayer.render(this.viewport, 'display');
+    }
   }
 
   get width() {
@@ -396,6 +406,16 @@ class PDFPageView {
       div.insertBefore(canvasWrapper, this.annotationLayer.div);
     } else {
       div.appendChild(canvasWrapper);
+    }
+
+    let anonCanvasWrapper = document.createElement('div');
+    anonCanvasWrapper.style.width = div.style.width;
+    anonCanvasWrapper.style.height = div.style.height;
+    anonCanvasWrapper.classList.add('anonymizationLayer');
+    if (this.anonymizationLayer && this.anonymizationLayer.canvas) {
+      div.insertBefore(anonCanvasWrapper, this.anonymizationLayer.canvas);
+    } else {
+      div.appendChild(anonCanvasWrapper);
     }
 
     let textLayer = null;
@@ -497,6 +517,14 @@ class PDFPageView {
       }
       this.annotationLayer.render(this.viewport, 'display');
     }
+    if(this.anonymizationLayerFactory) {
+      if (!this.anonymizationLayer) {
+        this.anonymizationLayer = this.anonymizationLayerFactory.
+          createAnonymizationLayerBuilder(anonCanvasWrapper, pdfPage, this.anonymizationParts, this.l10n);
+      }
+      this.anonymizationLayer.render(this.viewport, 'display');
+    }
+
     div.setAttribute('data-loaded', true);
 
     if (this.onBeforeDraw) {

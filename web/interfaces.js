@@ -160,6 +160,22 @@ class IPDFAnnotationLayerFactory {
 /**
  * @interface
  */
+class IPDFAnonymizationLayerFactory {
+  /**
+   * @param {HTMLDivElement} pageDiv
+   * @param {PDFPage} pdfPage
+   * @param {string} imageResourcesPath - (optional) Path for image resources,
+   *   mainly for annotation icons. Include trailing slash.
+   * @param {boolean} renderInteractiveForms
+   * @param {IL10n} l10n
+   * @returns {AnnotationLayerBuilder}
+   */
+  createAnonymizationLayerBuilder(pageDiv, pdfPage, rectangles, l10n = undefined) {}
+}
+
+/**
+ * @interface
+ */
 class IL10n {
   /**
    * @returns {Promise<string>} - Resolves to the current locale.
@@ -196,5 +212,6 @@ export {
   IRenderableView,
   IPDFTextLayerFactory,
   IPDFAnnotationLayerFactory,
+  IPDFAnonymizationLayerFactory,
   IL10n,
 };

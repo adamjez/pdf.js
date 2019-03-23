@@ -84,6 +84,7 @@ let PDFViewerApplication = {
   pdfDocument: null,
   pdfLoadingTask: null,
   printService: null,
+  anonymizationPages: [],
   /** @type {PDFViewer} */
   pdfViewer: null,
   /** @type {PDFThumbnailViewer} */
@@ -314,6 +315,7 @@ let PDFViewerApplication = {
       eventBus,
       renderingQueue: pdfRenderingQueue,
       linkService: pdfLinkService,
+      anonymizationPages: this.anonymizationPages,
       downloadManager,
       findController,
       renderer: AppOptions.get('renderer'),
@@ -1786,9 +1788,14 @@ function webViewerUpdateViewarea(evt) {
   }
   let href =
     PDFViewerApplication.pdfLinkService.getAnchorUrl(location.pdfOpenParams);
-  PDFViewerApplication.appConfig.toolbar.viewBookmark.href = href;
-  PDFViewerApplication.appConfig.secondaryToolbar.viewBookmarkButton.href =
-    href;
+  let viewBookmark = PDFViewerApplication.appConfig.toolbar.viewBookmark;
+  if(viewBookmark) {
+    viewBookmark.href = href;
+  }
+  let viewBookmarkButton = PDFViewerApplication.appConfig.secondaryToolbar.viewBookmarkButton;
+  if(viewBookmarkButton) {
+    viewBookmarkButton.href = href;
+  }
 
   // Show/hide the loading indicator in the page number input element.
   let currentPage =
@@ -1868,9 +1875,11 @@ if (typeof PDFJSDev === 'undefined' || PDFJSDev.test('GENERIC')) {
 
     // URL does not reflect proper document location - hiding some icons.
     let appConfig = PDFViewerApplication.appConfig;
-    appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
-    appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden',
-                                                               'true');
+    appConfig.toolbar.viewBookmark 
+     && appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
+    appConfig.secondaryToolbar.viewBookmarkButton 
+     && appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden', 'true');
+
     appConfig.toolbar.download.setAttribute('hidden', 'true');
     appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
   };

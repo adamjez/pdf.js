@@ -18,6 +18,9 @@ import {
   AnnotationLayerBuilder, DefaultAnnotationLayerFactory
 } from './annotation_layer_builder.js';
 import {
+  AnonymizationLayerBuilder, DefaultAnonymizationLayerFactory
+} from './anonymization_layer_builder.js';
+import {
   DefaultTextLayerFactory, TextLayerBuilder
 } from './text_layer_builder.js';
 import {
@@ -47,6 +50,8 @@ export {
   TextLayerBuilder,
   DefaultTextLayerFactory,
   AnnotationLayerBuilder,
+  DefaultAnonymizationLayerFactory,
+  AnonymizationLayerBuilder,
   DefaultAnnotationLayerFactory,
   PDFHistory,
   PDFFindController,

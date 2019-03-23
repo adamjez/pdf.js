@@ -22,6 +22,7 @@ import {
 } from './ui_utils';
 import { PDFRenderingQueue, RenderingStates } from './pdf_rendering_queue';
 import { AnnotationLayerBuilder } from './annotation_layer_builder';
+import { AnonymizationLayerBuilder } from './anonymization_layer_builder';
 import { createPromiseCapability } from 'pdfjs-lib';
 import { PDFPageView } from './pdf_page_view';
 import { SimpleLinkService } from './pdf_link_service';
@@ -156,6 +157,7 @@ class BaseViewer {
     this.useOnlyCssZoom = options.useOnlyCssZoom || false;
     this.maxCanvasPixels = options.maxCanvasPixels;
     this.l10n = options.l10n || NullL10n;
+    this.anonymizationPages = options.anonymizationPages;
 
     this.defaultRenderingQueue = !options.renderingQueue;
     if (this.defaultRenderingQueue) {
@@ -427,16 +429,22 @@ class BaseViewer {
         if (this.textLayerMode !== TextLayerMode.DISABLE) {
           textLayerFactory = this;
         }
+
+        let anonymizationParts = [];
+        this.anonymizationPages.push(anonymizationParts); 
+
         let pageView = new PDFPageView({
           container: this._setDocumentViewerElement,
           eventBus: this.eventBus,
           id: pageNum,
           scale,
+          anonymizationParts,
           defaultViewport: viewport.clone(),
           renderingQueue: this.renderingQueue,
-          textLayerFactory,
+          // textLayerFactory: textLayerFactory,
           textLayerMode: this.textLayerMode,
-          annotationLayerFactory: this,
+          // annotationLayerFactory: this,
+          anonymizationLayerFactory: this,
           imageResourcesPath: this.imageResourcesPath,
           renderInteractiveForms: this.renderInteractiveForms,
           renderer: this.renderer,
@@ -1024,6 +1032,25 @@ class BaseViewer {
       l10n,
     });
   }
+
+    /**
+   * @param {HTMLDivElement} pageDiv
+   * @param {PDFPage} pdfPage
+   * @param {string} imageResourcesPath - (optional) Path for image resources,
+   *   mainly for annotation icons. Include trailing slash.
+   * @param {boolean} renderInteractiveForms
+   * @param {IL10n} l10n
+   * @returns {AnonymizationLayerBuilder}
+   */
+  createAnonymizationLayerBuilder(pageDiv, pdfPage, rectangles, l10n = NullL10n) {
+    return new AnonymizationLayerBuilder({
+      pageDiv,
+      pdfPage,
+      rectangles,
+      l10n,
+    });
+  }
+
 
   /**
    * @returns {boolean} Whether all pages of the PDF document have identical
