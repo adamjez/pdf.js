@@ -74,6 +74,7 @@ function getViewerConfiguration() {
       zoomOut: document.getElementById('zoomOut'),
       viewFind: document.getElementById('viewFind'),
       openFile: document.getElementById('openFile'),
+      revertAnonymization: document.getElementById('revertAnonymization'),
       print: document.getElementById('print'),
       presentationModeButton: document.getElementById('presentationMode'),
       download: document.getElementById('download'),

@@ -848,6 +848,12 @@ class BaseViewer {
     });
   }
 
+  renderAnnotationsAllPages() {
+    for (let i = 0, ii = this._pages.length; i < ii; i++) {
+      this._pages[i].renderAnnotations();
+    }
+  }
+
   containsElement(element) {
     return this.container.contains(element);
   }

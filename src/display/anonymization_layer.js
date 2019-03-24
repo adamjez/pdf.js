@@ -89,24 +89,16 @@ class AnonymizationLayer {
   static render(parameters) {
     const { canvas, rectangles, viewport } = parameters;
 
-    const rectangleFactory = function (rectangle) {
-      return AnonymizationElementFactory.create({
-        rectangle: rectangle,
-        canvas: canvas,
-        page: parameters.page,
-        viewport: viewport
-      })
+    const rectangleFactory = AnonymizationLayer.createRectangleFactory(parameters);
+    const render = function () {
+      AnonymizationLayer.renderRectangles(rectangles, rectangleFactory);
     };
 
-    AnonymizationLayer.renderRectangles(parameters, rectangleFactory);
-    AnonymizationLayer.registerCanvasEvents(canvas, viewport, rectangles, function () {
-      AnonymizationLayer.renderRectangles(parameters, rectangleFactory);
-    }, rectangleFactory);
+    render();
+    AnonymizationLayer.registerCanvasEvents(canvas, viewport, rectangles, render, rectangleFactory);
   }
 
-  static renderRectangles(parameters, rectangleFactory) {
-    const rectangles = parameters.rectangles;
-
+  static renderRectangles(rectangles, rectangleFactory) {
     for (let i = 0, ii = rectangles.length; i < ii; i++) {
       let rectangle = rectangles[i];
       if (!rectangle) {
@@ -119,7 +111,7 @@ class AnonymizationLayer {
     }
   }
 
-  static registerCanvasEvents(canvas, viewport, rectangles, rerender, rectangleFactory) {
+  static registerCanvasEvents(canvas, viewport, rectangles, render, rectangleFactory) {
     var painting = false;
     var createRectangle = null;
     var rectangle = null;
@@ -130,7 +122,7 @@ class AnonymizationLayer {
           const point0 = viewport.convertToPdfPoint(e.offsetX, viewport.height - e.offsetY);
           const point1 = viewport.convertToPdfPoint(mouseEvent.offsetX, viewport.height - mouseEvent.offsetY);
 
-          return { x0: point0[0], y0: point0[1], x1: point1[0], y1: point1[1] };
+          return { x0: point0[0], y0: point0[1], x1: point1[0], y1: point1[1], createdAt: Date.now() };
         }
         painting = true;
       }
@@ -141,7 +133,7 @@ class AnonymizationLayer {
         let rectangle = createRectangle(e);
         rectangles.push(rectangle);
 
-        rerender();
+        render();
 
         painting = false;
       }
@@ -151,7 +143,7 @@ class AnonymizationLayer {
       if (rectangle) {
         rectangle.clear();
         rectangle = null;
-        rerender();
+        render();
       }
 
       if (painting) {
@@ -159,6 +151,17 @@ class AnonymizationLayer {
         rectangle.render();
       }
     });
+  }
+
+  static createRectangleFactory(parameters) {
+    return function (rectangle) {
+      return AnonymizationElementFactory.create({
+        rectangle: rectangle,
+        canvas: parameters.canvas,
+        page: parameters.page,
+        viewport: parameters.viewport
+      })
+    };
   }
 
   /**
@@ -169,7 +172,8 @@ class AnonymizationLayer {
    * @memberof AnnotationLayer
    */
   static update(parameters) {
-    AnonymizationLayer.renderRectangles(parameters);
+    AnonymizationLayer.renderRectangles(parameters.rectangles, 
+      AnonymizationLayer.createRectangleFactory(parameters));
 
     parameters.canvas.removeAttribute('hidden');
   }

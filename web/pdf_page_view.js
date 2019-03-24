@@ -205,6 +205,12 @@ class PDFPageView {
     div.appendChild(this.loadingIconDiv);
   }
 
+  renderAnnotations() {
+    if(this.anonymizationLayer) {
+      this.anonymizationLayer.render(this.viewport, 'display');
+    }
+  }
+
   update(scale, rotation) {
     this.scale = scale || this.scale;
     if (typeof rotation !== 'undefined') { // The rotation may be zero.

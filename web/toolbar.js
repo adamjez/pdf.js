@@ -138,6 +138,10 @@ class Toolbar {
       eventBus.dispatch('presentationmode', { source: self, });
     });
 
+    items.revertAnonymization.addEventListener('click', function() {
+      eventBus.dispatch('revertanonymization', { source: self, });
+    });
+
     items.openFile && items.openFile.addEventListener('click', function() {
       eventBus.dispatch('openfile', { source: self, });
     });
